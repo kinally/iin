@@ -1,0 +1,217 @@
+/* ── Reset & Base ── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px}
+body{
+  min-height:100vh;
+  background:#08080f;
+  background-image:radial-gradient(ellipse at 30% 20%,rgba(212,168,67,.06) 0,transparent 60%),
+                   radial-gradient(ellipse at 70% 80%,rgba(52,152,219,.04) 0,transparent 60%);
+  color:#e0dcd2;
+  font-family:"Inter","PingFang SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  display:flex;flex-direction:column;align-items:center;
+  padding:clamp(1rem,4vw,3rem);
+  line-height:1.7
+}
+body::after{
+  content:'';position:fixed;inset:0;
+  opacity:.015;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:999
+}
+
+/* ── Layout ── */
+.container{
+  width:100%;max-width:640px;
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;
+  min-height:calc(100vh - 6rem)
+}
+.header{text-align:center;margin-bottom:2.5rem}
+.header h1{
+  font-size:clamp(1.6rem,5vw,2.4rem);
+  font-weight:300;letter-spacing:.3em;
+  color:#d4a843;margin-bottom:.4rem
+}
+.header p{
+  font-size:.85rem;color:#8888aa;letter-spacing:.08em
+}
+
+/* ── Button ── */
+.btn-wrap{text-align:center;margin-bottom:2.5rem}
+#castBtn{
+  background:rgba(212,168,67,.1);
+  border:1px solid rgba(212,168,67,.3);
+  color:#d4a843;padding:.85rem 2.8rem;
+  border-radius:50px;font-size:1rem;letter-spacing:.1em;
+  cursor:pointer;transition:all .3s;
+  font-family:inherit;font-weight:500;
+  backdrop-filter:blur(4px)
+}
+#castBtn:hover{background:rgba(212,168,67,.2);border-color:rgba(212,168,67,.55);box-shadow:0 0 30px rgba(212,168,67,.08)}
+#castBtn:disabled{opacity:.25;cursor:not-allowed;box-shadow:none}
+
+/* ── Toss Area ── */
+.toss-area{display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem}
+.toss-row{
+  display:flex;align-items:center;gap:.7rem;
+  padding:.7rem .9rem;
+  background:rgba(255,255,255,.035);
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.07);
+  opacity:0;transform:translateY(10px);
+  transition:opacity .5s,transform .5s
+}
+.toss-row.visible{opacity:1;transform:translateY(0)}
+.toss-row .pos{width:3.6rem;font-size:.75rem;color:#8888aa;font-weight:500;letter-spacing:.05em;flex-shrink:0}
+.coins{display:flex;gap:.5rem;flex-shrink:0}
+.coin{
+  width:2.2rem;height:2.2rem;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;font-weight:600;
+  border:1.5px solid;transition:all .4s
+}
+.coin.tzi{border-color:#d4a843;color:#d4a843;background:rgba(212,168,67,.1)}
+.coin.fa{border-color:#6b6b9a;color:#8888aa;background:rgba(107,107,154,.08)}
+.toss-result{font-size:.8rem;margin-left:auto;text-align:right;flex-shrink:0;min-width:7rem}
+.toss-result .verdict{font-weight:500}
+.toss-result .sub{font-size:.7rem;color:#8888aa;margin-top:.1rem}
+.toss-result.moving .verdict{color:#ff4757}
+.toss-result.still .verdict{color:#8888aa}
+
+/* ── Hexagram Section ── */
+.hex-section{margin-top:1rem;border-top:1px solid rgba(255,255,255,.07);padding-top:2rem;flex:1}
+.hex-pair{display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap}
+.hex-box{text-align:center;flex:1;min-width:160px}
+.hex-box h3{font-size:.75rem;font-weight:400;letter-spacing:.15em;color:#8888aa;margin-bottom:.6rem}
+.hex-name{font-size:1.15rem;font-weight:600;color:#e8d5a3;margin-bottom:.1rem;letter-spacing:.08em;cursor:pointer;transition:color .2s}
+.hex-name:hover{color:#f0e0aa;text-decoration:underline}
+.hex-name-sub{font-size:.78rem;color:#8888aa;margin-bottom:.2rem;letter-spacing:.04em}
+.hex-lines{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:.8rem;width:120px;margin-left:auto;margin-right:auto}
+.line{display:flex;height:6px;border-radius:3px;transition:all .6s;width:100%}
+.line.yang{width:100%}
+.line.yin{background:transparent !important;width:100%;height:6px;position:relative;border-radius:0}
+.line.yin::before,.line.yin::after{content:'';position:absolute;top:0;height:100%;background:#6b6b9a;border-radius:2px}
+.line.yin::before{left:0;width:43%}
+.line.yin::after{right:0;width:43%}
+.line.moving{box-shadow:0 0 14px rgba(255,71,87,.4)}
+.line.moving.yang{box-shadow:0 0 14px rgba(255,71,87,.5)}
+.line.moving.yin::before,.line.moving.yin::after{background:#ff4757 !important}
+.hex-desc{font-size:.82rem;color:#b8b4a8;line-height:1.7;max-width:300px;margin:.2rem auto 0;text-align:center}
+.action-row{display:flex;gap:.5rem;justify-content:center;margin-top:.4rem;flex-wrap:wrap}
+.hex-detail-btn,.takashima-btn{font-size:.72rem;cursor:pointer;display:inline-block;margin-top:.4rem;transition:color .2s;background:none;border:none;font-family:inherit}
+.hex-detail-btn{color:#8888aa;border-bottom:1px dotted rgba(136,136,170,.3)}
+.hex-detail-btn:hover{color:#d4a843}
+.takashima-btn{color:#8b6b5a;border-bottom:1px dotted rgba(139,107,90,.3)}
+.takashima-btn:hover{color:#c49a7a}
+.nayja-btn{font-size:.72rem;cursor:pointer;display:inline-block;margin-top:.4rem;transition:color .2s;background:none;border:none;font-family:inherit;color:#6b8a8a;border-bottom:1px dotted rgba(107,138,138,.3)}
+.nayja-btn:hover{color:#8ac4c4}
+.arrow-wrap{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#d4a843;
+  font-size:2.2rem;
+  font-weight:700;
+  padding:0 .2rem;
+  user-select:none;
+  opacity:.75;
+  text-shadow:0 0 12px rgba(212,168,67,.25)
+}
+
+/* ── Reading ── */
+.reading{display:none;margin-top:2rem;padding:1.5rem;border-radius:12px;background:rgba(212,168,67,.045);border:1px solid rgba(212,168,67,.12)}
+.reading.show{display:block;animation:fadeIn .8s}
+.reading h4{font-size:.8rem;color:#d4a843;font-weight:500;letter-spacing:.15em;margin-bottom:.8rem}
+.reading .text{font-size:.9rem;color:#d0ccc0;line-height:1.8}
+.reading .text .hl{color:#ff4757}
+
+/* ── Action Bar ── */
+.action-bar{display:flex;gap:.8rem;justify-content:center;margin-top:1.5rem;flex-wrap:wrap}
+.action-bar button{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  color:#8888aa;padding:.5rem 1.2rem;
+  border-radius:8px;font-size:.78rem;cursor:pointer;
+  transition:all .25s;font-family:inherit;letter-spacing:.04em
+}
+.action-bar button:hover{background:rgba(255,255,255,.08);color:#d0ccc0}
+
+/* ── Modal ── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:1000;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;
+  padding:1rem
+}
+.modal-overlay.show{display:flex;animation:fadeIn .3s}
+.modal-box{
+  background:#12121c;border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;padding:2rem;max-width:520px;width:100%;
+  max-height:80vh;overflow-y:auto;position:relative
+}
+.modal-close{
+  position:absolute;top:1rem;right:1.2rem;
+  color:#8888aa;font-size:1.3rem;cursor:pointer;
+  transition:color .2s;background:none;border:none;font-family:inherit
+}
+.modal-close:hover{color:#e0dcd2}
+.modal-box .modal-title{font-size:1.4rem;font-weight:600;color:#e8d5a3;margin-bottom:.3rem;letter-spacing:.06em}
+.modal-box .modal-subtitle{font-size:.82rem;color:#8888aa;margin-bottom:1.2rem}
+.modal-box .modal-section{margin-bottom:1rem}
+.modal-box .modal-section h5{font-size:.78rem;color:#d4a843;font-weight:500;letter-spacing:.1em;margin-bottom:.3rem;border-bottom:1px solid rgba(212,168,67,.1);padding-bottom:.2rem}
+.modal-box .modal-section p{font-size:.88rem;color:#d0ccc0;line-height:1.7;white-space:pre-wrap}
+
+/* ── 纳甲排盘表格 ── */
+.nayja-table-wrap{margin:.5rem 0 0;overflow-x:auto}
+.nayja-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.nayja-table th{font-size:.7rem;color:#6b6b8a;font-weight:400;letter-spacing:.08em;text-align:left;padding:.3rem .5rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.nayja-table td{padding:.35rem .5rem;border-bottom:1px solid rgba(255,255,255,.03)}
+.nayja-pos{font-size:.78rem;color:#b8b4a8}
+.nayja-dz{font-size:.88rem;color:#e8d5a3;font-weight:500}
+.nayja-wx{font-size:.82rem;font-weight:500}
+.nayja-lq{font-size:.82rem;font-weight:500}
+.nayja-shi{color:#ffd700;font-size:.72rem;font-weight:600}
+.nayja-ying{color:#7ec8e3;font-size:.72rem;font-weight:600}
+
+/* ── History ── */
+.history-panel{
+  display:none;margin-top:1rem;padding:1rem 1.2rem;
+  background:rgba(255,255,255,.025);border-radius:10px;
+  border:1px solid rgba(255,255,255,.05);
+  max-height:300px;overflow-y:auto
+}
+.history-panel.show{display:block}
+.history-panel h4{font-size:.75rem;color:#8888aa;font-weight:400;letter-spacing:.1em;margin-bottom:.6rem}
+.history-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.03);
+  font-size:.8rem;color:#b8b4a8;cursor:pointer;transition:color .2s
+}
+.history-item:hover{color:#e8d5a3}
+.history-item .h-time{font-size:.7rem;color:#6b6b8a}
+.history-item .h-name{font-weight:500}
+.history-clear{
+  font-size:.72rem;color:#6b6b8a;cursor:pointer;float:right;
+  transition:color .2s;background:none;border:none;font-family:inherit
+}
+.history-clear:hover{color:#ff4757}
+
+/* ── Footer ── */
+.footer{text-align:center;margin-top:auto;padding-top:3rem;font-size:.7rem;color:#3a3a52;letter-spacing:.1em}
+
+/* ── Shared ── */
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(212,168,67,.2);border-top-color:#d4a843;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Responsive ── */
+@media(max-width:480px){
+  .toss-row{flex-wrap:wrap;gap:.4rem}
+  .toss-result{margin-left:0;min-width:0;width:100%;text-align:left}
+  .hex-pair{gap:1.5rem}
+  .modal-box{padding:1.2rem}
+  .history-item{display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;border-radius:6px;cursor:pointer;transition:background .2s}
+  .history-item:hover{background:rgba(255,255,255,.04)}
+  .h-name{color:#d4a843;font-weight:500}
+  .h-time{font-size:.7rem;color:#6b6b8a;flex-shrink:0;margin-left:1rem}
+}

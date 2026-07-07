@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>周易 · 三枚铜钱</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>✦ 周 易 ✦</h1>
+    <p>三枚铜钱 · 六次投掷</p>
+  </div>
+
+  <div class="btn-wrap">
+    <button id="castBtn">摇 卦</button>
+  </div>
+
+  <div class="toss-area" id="tossArea"></div>
+
+  <div class="hex-section" id="hexSection" style="display:none">
+    <div class="hex-pair">
+      <div class="hex-box" id="originalBox">
+        <h3>本 卦</h3>
+        <div class="hex-lines" id="origLines"></div>
+        <div class="hex-name" id="origName"></div>
+        <div class="hex-name-sub" id="origNameSub"></div>
+        <div class="hex-desc" id="origDesc"></div>
+        <div class="action-row">
+          <span class="hex-detail-btn" data-box="orig">📖 卦辞详解</span>
+          <span class="takashima-btn" data-box="orig">📜 高岛易断</span>
+          <span class="nayja-btn" data-box="orig" title="纳甲排盘：为每一爻配上地支、五行、六亲（父母/兄弟/官鬼/妻财/子孙），并标出世爻（代表自己）和应爻（代表对方/事体）。适合有基础的读者参考。">🔮 纳甲排盘 ⓘ</span>
+        </div>
+      </div>
+      <div class="arrow-wrap">👉</div>
+      <div class="hex-box" id="changedBox">
+        <h3>变 卦</h3>
+        <div class="hex-lines" id="changeLines"></div>
+        <div class="hex-name" id="changeName"></div>
+        <div class="hex-name-sub" id="changeNameSub"></div>
+        <div class="hex-desc" id="changeDesc"></div>
+        <div class="action-row">
+          <span class="hex-detail-btn" data-box="change">📖 卦辞详解</span>
+          <span class="takashima-btn" data-box="change">📜 高岛易断</span>
+          <span class="nayja-btn" data-box="change" title="纳甲排盘：为每一爻配上地支、五行、六亲（父母/兄弟/官鬼/妻财/子孙），并标出世爻（代表自己）和应爻（代表对方/事体）。适合有基础的读者参考。">🔮 纳甲排盘 ⓘ</span>
+        </div>
+      </div>
+    <div class="reading" id="reading">
+      <h4>▸ 解 读</h4>
+      <div class="text" id="readingText"></div>
+      <button id="copyReadingBtn" style="margin-top:.8rem;width:100%;padding:.55rem;border-radius:8px;border:1px solid rgba(212,168,67,.2);background:rgba(212,168,67,.06);color:#d4a843;font-size:.85rem;cursor:pointer;font-family:inherit;transition:all .25s">📋 复制解读文本给AI</button>
+      <button id="copyNayjaReadingBtn" style="margin-top:.5rem;width:100%;padding:.55rem;border-radius:8px;border:1px solid rgba(212,168,67,.2);background:rgba(212,168,67,.06);color:#d4a843;font-size:.85rem;cursor:pointer;font-family:inherit;transition:all .25s">🔮 复制纳甲排盘给AI</button>
+    </div>
+    <div class="action-bar" id="actionBar" style="display:none">
+      <button id="saveBtn">💾 保存此卦</button>
+      <button id="shareBtn">🖼️ 保存图片</button>
+      <button id="historyBtn">📋 历史记录</button>
+    </div>
+    <div class="history-panel" id="historyPanel">
+      <h4>摇卦记录<button class="history-clear" id="clearHistoryBtn">清空</button></h4>
+      <div id="historyList"></div>
+    </div>
+  </div>
+  <div class="footer">— 不问则已，一问天应 —</div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-subtitle" id="modalSubtitle"></div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

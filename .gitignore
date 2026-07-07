@@ -1,0 +1,4 @@
+*.bak
+*.xlsx
+.DS_Store
+Thumbs.db
