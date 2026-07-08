@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "iin",
+  "compatibility_date": "2026-07-08",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": ".",
+    "not_found_handling": "404.html"
+  },
+  "compatibility_flags": [
+    "nodejs_compat"
+  ]
+}
