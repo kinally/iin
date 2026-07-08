@@ -205,13 +205,36 @@ body::after{
 @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── Responsive ── */
-@media(max-width:480px){
-  .toss-row{flex-wrap:wrap;gap:.4rem}
-  .toss-result{margin-left:0;min-width:0;width:100%;text-align:left}
-  .hex-pair{gap:1.5rem}
-  .modal-box{padding:1.2rem}
-  .history-item{display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;border-radius:6px;cursor:pointer;transition:background .2s}
+@media(max-width:600px){
+  .container{max-width:100%}
+  .toss-row{flex-wrap:wrap;gap:.35rem;padding:.55rem .65rem}
+  .toss-row .pos{width:2.8rem;font-size:.7rem}
+  .coins{gap:.35rem}
+  .coin{width:1.9rem;height:1.9rem;font-size:.7rem}
+  .toss-result{margin-left:0;min-width:0;width:100%;text-align:left;font-size:.75rem}
+  .hex-pair{flex-direction:column;align-items:center;gap:0}
+  .hex-box{min-width:0;width:100%}
+  .hex-lines{width:100px}
+  .arrow-wrap{transform:rotate(90deg);padding:.3rem 0;font-size:1.6rem}
+  .reading{padding:1rem}
+  .reading .text{font-size:.85rem}
+  .modal-box{padding:1rem .85rem;margin:.5rem;max-height:85vh}
+  .modal-box .modal-title{font-size:1.15rem}
+  .modal-box .modal-section p{font-size:.83rem}
+  .action-bar{gap:.5rem}
+  .action-bar button{padding:.55rem .9rem;font-size:.75rem;min-height:2.6rem}
+  #castBtn{padding:.75rem 2rem;font-size:.92rem;min-height:2.8rem}
+  .hex-detail-btn,.takashima-btn,.nayja-btn{font-size:.7rem;padding:.3rem 0;min-height:2rem}
+  .btn-wrap{margin-bottom:1.8rem}
+  .header{margin-bottom:1.8rem}
+  .header h1{font-size:clamp(1.3rem,5.5vw,1.8rem)}
+  .hex-name{font-size:1rem}
+  .hex-desc{font-size:.78rem;max-width:100%}
+  .action-row{gap:.4rem}
+  #copyReadingBtn,#copyNayjaReadingBtn{font-size:.78rem;padding:.45rem}
+  .history-panel{padding:.7rem .8rem}
+  .history-item{padding:.5rem .6rem;border-radius:6px;cursor:pointer;transition:background .2s}
   .history-item:hover{background:rgba(255,255,255,.04)}
   .h-name{color:#d4a843;font-weight:500}
-  .h-time{font-size:.7rem;color:#6b6b8a;flex-shrink:0;margin-left:1rem}
+  .h-time{font-size:.65rem;color:#6b6b8a;flex-shrink:0;margin-left:.6rem}
 }
