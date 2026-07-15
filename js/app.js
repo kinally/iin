@@ -275,10 +275,19 @@ function showNayja(upper, lower) {
   modalTitle.innerHTML = coloredNameHTML(hexData.name, upper, lower);
   modalSubtitle.innerHTML = `🔮 纳甲排盘 · ${nayja.palaceIcon}${nayja.palaceName}宫（${nayja.palaceElement}）· ${nayja.type}卦`;
 
+  // 占卜时间 + 八字
+  let baziHtml = '';
+  if (lastResult && lastResult.castBazi) {
+    const t = lastResult.castTime || '';
+    const b = formatBaziCompact(lastResult.castBazi);
+    baziHtml = `<div class="nayja-bazi">⏱ ${t} ｜ 八字：<strong>${b}</strong></div>`;
+  }
+
   const lb = trigramBits(lower), ub = trigramBits(upper);
   const lineBits = [lb[0], lb[1], lb[2], ub[0], ub[1], ub[2]];
 
-  let html = `<div class="nayja-table-wrap"><table class="nayja-table">
+  let html = baziHtml;
+  html += `<div class="nayja-table-wrap"><table class="nayja-table">
     <tr><th>爻位</th><th>爻</th><th>地支</th><th>五行</th><th>六亲</th></tr>`;
 
   for (let i = 5; i >= 0; i--) {
@@ -346,13 +355,13 @@ function showNayja(upper, lower) {
       if (lastResult) {
         const origNayja = computeNayja(lastResult.origUpper, lastResult.origLower);
         if (origNayja) {
-          parts.push(formatNayjaText(origNayja, lastResult.origUpper, lastResult.origLower, '本卦'));
+          parts.push(formatNayjaText(origNayja, lastResult.origUpper, lastResult.origLower, '本卦', lastResult));
         }
         const hasChange = lastResult.changeUpper !== lastResult.origUpper || lastResult.changeLower !== lastResult.origLower;
         if (hasChange) {
           const chgNayja = computeNayja(lastResult.changeUpper, lastResult.changeLower);
           if (chgNayja) {
-            parts.push(formatNayjaText(chgNayja, lastResult.changeUpper, lastResult.changeLower, '变卦'));
+            parts.push(formatNayjaText(chgNayja, lastResult.changeUpper, lastResult.changeLower, '变卦', lastResult));
           }
         }
       }
@@ -375,7 +384,9 @@ function saveToHistory(result) {
     movingBits: result.movingBits,
     origName: result.origFullName,
     changeName: result.changeFullName,
-    time
+    time,
+    castTime: result.castTime || time,
+    castBazi: result.castBazi ? { pillars: result.castBazi.pillars } : null
   });
   if (history.length > 50) history.pop();
   localStorage.setItem('yijingHistory', JSON.stringify(history));
@@ -388,12 +399,13 @@ function renderHistory() {
     historyList.innerHTML = '<p style="font-size:.78rem;color:#6b6b8a">暂无记录</p>';
     return;
   }
-  historyList.innerHTML = history.map((item, i) =>
-    `<div class="history-item" data-idx="${i}">
+  historyList.innerHTML = history.map((item, i) => {
+    const baziStr = item.castBazi ? formatBaziCompact(item.castBazi) : '';
+    return `<div class="history-item" data-idx="${i}">
       <span><span class="h-name">${item.origName}</span> → ${item.changeName}</span>
-      <span class="h-time">${item.time}</span>
-    </div>`
-  ).join('');
+      <span class="h-time">${item.time}${baziStr ? ' | ' + baziStr : ''}</span>
+    </div>`;
+  }).join('');
   historyList.querySelectorAll('.history-item').forEach(el => {
     el.addEventListener('click', () => {
       const idx = parseInt(el.dataset.idx);
@@ -430,7 +442,9 @@ function restoreFromHistory(item) {
     origUpper: origResult.upper,
     origLower: origResult.lower,
     changeUpper: changeResult.upper,
-    changeLower: changeResult.lower
+    changeLower: changeResult.lower,
+    castTime: item.castTime || item.time,
+    castBazi: item.castBazi || null
   };
 }
 
@@ -621,7 +635,9 @@ function loadFromHash() {
     origFullName: getFullName(result.upper, result.lower),
     changeFullName: getFullName(result.upper, result.lower),
     origUpper: result.upper, origLower: result.lower,
-    changeUpper: result.upper, changeLower: result.lower
+    changeUpper: result.upper, changeLower: result.lower,
+    castTime: new Date().toLocaleString('zh-CN', { hour12: false }),
+    castBazi: getCurrentBazi()
   };
 }
 
@@ -733,7 +749,9 @@ castBtn.addEventListener('click', async ()=>{
     origLower: origResult.lower,
     changeUpper: changeResult.upper,
     changeLower: changeResult.lower,
-    origResult, changeResult
+    origResult, changeResult,
+    castTime: new Date().toLocaleString('zh-CN', { hour12: false }),
+    castBazi: getCurrentBazi()
   };
 
   castBtn.innerHTML = '再摇一卦';
@@ -848,7 +866,7 @@ document.getElementById('copyNayjaReadingBtn').addEventListener('click', () => {
   // 本卦纳甲
   const origNayja = computeNayja(lastResult.origUpper, lastResult.origLower);
   if (origNayja) {
-    parts.push(formatNayjaText(origNayja, lastResult.origUpper, lastResult.origLower, '本卦'));
+    parts.push(formatNayjaText(origNayja, lastResult.origUpper, lastResult.origLower, '本卦', lastResult));
   }
 
   // 变卦存在且不同 → 追加变卦纳甲
@@ -856,7 +874,7 @@ document.getElementById('copyNayjaReadingBtn').addEventListener('click', () => {
   if (hasChange) {
     const chgNayja = computeNayja(lastResult.changeUpper, lastResult.changeLower);
     if (chgNayja) {
-      parts.push(formatNayjaText(chgNayja, lastResult.changeUpper, lastResult.changeLower, '变卦'));
+      parts.push(formatNayjaText(chgNayja, lastResult.changeUpper, lastResult.changeLower, '变卦', lastResult));
     }
   }
 
@@ -868,7 +886,7 @@ document.getElementById('copyNayjaReadingBtn').addEventListener('click', () => {
 });
 
 /** 格式化纳甲排盘为 AI 友好文本 */
-function formatNayjaText(nayja, upper, lower, label) {
+function formatNayjaText(nayja, upper, lower, label, bazi) {
   const hexData = HEX[upper]?.[lower];
   if (!nayja || !hexData) return '';
   const lb = trigramBits(lower), ub = trigramBits(upper);
@@ -876,7 +894,13 @@ function formatNayjaText(nayja, upper, lower, label) {
   let lines = [];
   const fullName = getFullName(upper, lower);
   const tag = label ? `【纳甲排盘 · ${label}】` : '【纳甲排盘】';
-  // 标题行
+  // 第一行：占卜时间 + 八字
+  if (bazi) {
+    const t = bazi.castTime || '';
+    const b = bazi.castBazi ? formatBaziCompact(bazi.castBazi) : '';
+    lines.push(`占卜时间：${t} ｜ 八字：${b}`);
+  }
+  // 第二行：卦名 + 宫位
   lines.push(`${tag}${fullName} — ${nayja.palaceName}宫（${nayja.palaceElement}）· ${nayja.type}卦`);
   lines.push(`世爻在${POS_NAMES[nayja.shi]}（代表问卦者），应爻在${POS_NAMES[nayja.ying]}（代表对方/所问之事）。`);
   lines.push('');
@@ -902,4 +926,109 @@ function formatNayjaText(nayja, upper, lower, label) {
 
 // ── 初始化 ──
 renderHistory();
+
+// ===== 八字计算 =====
+const TIAN_GAN = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+// 天干五行索引: 金0 木1 水2 火3 土4
+const GAN_WUXING = [1,1,3,3,4,4,0,0,2,2];
+
+// 节气近似日期 [月][日]
+const JIE_QI = [
+  { m:2, d:4 },  { m:3, d:6 },  { m:4, d:5 },  { m:5, d:6 },
+  { m:6, d:6 },  { m:7, d:7 },  { m:8, d:7 },  { m:9, d:8 },
+  { m:10,d:8 },  { m:11,d:7 },  { m:12,d:7 },  { m:1, d:6 },
+];
+
+/** 年干 → 月干起始 (五虎遁) */
+function getMonthStartStem(yearStem) {
+  return (yearStem % 5) * 2 + 2;
+}
+
+/** 日干 → 时干起始 (五鼠遁) */
+function getHourStartStem(dayStem) {
+  return (dayStem % 5) * 2;
+}
+
+/** 年柱 */
+function calcYearPillar(year) {
+  const stem = ((year - 4) % 10 + 10) % 10;
+  const branch = ((year - 4) % 12 + 12) % 12;
+  return { stem, branch, gan: TIAN_GAN[stem], zhi: DIZHI[branch] };
+}
+
+/** 月柱 (节气月) */
+function calcMonthPillar(year, month, day) {
+  let prevJie = -1;
+  for (let i = 0; i < JIE_QI.length; i++) {
+    const jq = JIE_QI[i];
+    let jqMonth = jq.m, jqDay = jq.d;
+    if (jq.m === 1) jqMonth = 13;
+    let m = month;
+    if (m === 1) m = 13;
+    if (m > jqMonth || (m === jqMonth && day >= jqDay)) {
+      prevJie = i;
+    }
+  }
+  const monthBranch = prevJie === -1 ? 11 : (prevJie + 2) % 12;
+  const yearPillar = calcYearPillar(year);
+  const startStem = getMonthStartStem(yearPillar.stem);
+  const stem = (startStem + (monthBranch - 2 + 12) % 12) % 10;
+  return { stem, branch: monthBranch, gan: TIAN_GAN[stem], zhi: DIZHI[monthBranch] };
+}
+
+/** 日柱 (基准 2000-01-01 = 戊午) */
+function calcDayPillar(year, month, day) {
+  const base = new Date(2000, 0, 1);
+  const target = new Date(year, month - 1, day);
+  const diff = Math.round((target - base) / 86400000);
+  const stem = ((4 + diff) % 10 + 10) % 10;
+  const branch = ((6 + diff) % 12 + 12) % 12;
+  return { stem, branch, gan: TIAN_GAN[stem], zhi: DIZHI[branch] };
+}
+
+/** 时柱 */
+function calcHourPillar(dayStem, hour) {
+  const branch = (hour >= 23 || hour < 1) ? 0 : Math.floor((hour + 1) / 2);
+  const stem = (getHourStartStem(dayStem) + branch) % 10;
+  return { stem, branch, gan: TIAN_GAN[stem], zhi: DIZHI[branch] };
+}
+
+/** 计算完整八字 */
+function calcBazi(year, month, day, hour) {
+  const yp = calcYearPillar(year);
+  const mp = calcMonthPillar(year, month, day);
+  const dp = calcDayPillar(year, month, day);
+  const hp = calcHourPillar(dp.stem, hour);
+  return { pillars: [yp, mp, dp, hp] };
+}
+
+/** 当前时间的八字 */
+function getCurrentBazi() {
+  const now = new Date();
+  return calcBazi(now.getFullYear(), now.getMonth() + 1, now.getDate(), now.getHours());
+}
+
+/** 八字 → 紧凑字串 (例: 丙午 午月 戊午 己未) 不显示月/日/时标注 */
+function formatBaziCompact(bazi) {
+  return bazi.pillars.map(p => p.gan + p.zhi).join(' ');
+}
+
+/** 八字 → 带柱名 (例: 丙午 午 戊午 己未) 月柱不显示月名因为节气月 */
+function formatBaziLabeled(bazi) {
+  return bazi.pillars.map((p, i) => `${['年','月','日','时'][i]}${p.gan}${p.zhi}`).join(' ');
+}
+
+// ── 实时时间+八字显示 ──
+function updateTimeBazi() {
+  const el = document.getElementById('tbTime');
+  const el2 = document.getElementById('tbBazi');
+  if (!el || !el2) return;
+  const now = new Date();
+  el.textContent = now.toLocaleString('zh-CN', { hour12: false });
+  const bazi = getCurrentBazi();
+  el2.innerHTML = `✧ 八字：<strong>${formatBaziCompact(bazi)}</strong>`;
+}
+
+updateTimeBazi();
+setInterval(updateTimeBazi, 1000);
 loadFromHash();

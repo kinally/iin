@@ -5,12 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>周易 · 三枚铜钱</title>
 <link rel="stylesheet" href="css/style.css">
+<style>
+/* ⏱ 时间+八字显示 */
+.time-bazi{text-align:center;margin-bottom:1.8rem;font-size:.82rem;color:#8888aa;letter-spacing:.04em;line-height:1.8}
+.time-bazi .tb-time{display:block;font-size:.75rem;color:#6b6b8a}
+.time-bazi .tb-bazi{display:block;font-size:1rem;color:#b8b4a8;font-weight:500}
+.time-bazi .tb-bazi strong{color:#d4a843}
+/* ⏱ 纳甲弹窗中的时间+八字 */
+.nayja-bazi{font-size:.82rem;color:#b8b4a8;margin-bottom:.8rem;padding:.4rem .6rem;background:rgba(255,255,255,.03);border-radius:6px;text-align:center}
+.nayja-bazi strong{color:#d4a843}
+</style>
 </head>
 <body>
 <div class="container">
   <div class="header">
     <h1>✦ 周 易 ✦</h1>
     <p>三枚铜钱 · 六次投掷</p>
+  </div>
+
+  <!-- ⏱ 当前时间+八字 -->
+  <div class="time-bazi" id="timeBazi">
+    <span class="tb-time" id="tbTime"></span>
+    <span class="tb-bazi" id="tbBazi"></span>
   </div>
 
   <div class="btn-wrap">
